@@ -9,19 +9,31 @@ import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.Socket;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class LoginPanel extends JPanel{
+import controller.Controll;
+import util.LoginListener;
+import util.ServerListener;
+import util.StateCode;
+
+public class LoginPanel extends JPanel implements ServerListener,ActionListener{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private LoginListener lls;
+	
 	private JTextField[] tf=new JTextField[2];
+	private JButton[] bt=new JButton[2];
 	public LoginPanel() {
 		setLayout(new GridBagLayout());
 		setOpaque(false);
@@ -41,11 +53,12 @@ public class LoginPanel extends JPanel{
 			gbc.gridx=1;			
 			add(tf[i], gbc);
 			//
-			JButton bt=new JButton(s2[i]);			
-			bt.setFont(new Font("微软雅黑", Font.TRUETYPE_FONT, 14));
+			bt[i]=new JButton(s2[i]);			
+			bt[i].setFont(new Font("微软雅黑", Font.TRUETYPE_FONT, 14));
 			gbc.gridx=i; gbc.gridy=2;	
 			gbc.anchor=GridBagConstraints.CENTER;
-			add(bt, gbc);
+			add(bt[i], gbc);
+			bt[i].addActionListener(this);
 		}
 	}
 	
@@ -59,5 +72,35 @@ public class LoginPanel extends JPanel{
 		g2.setComposite(AlphaComposite.SrcOver.derive(0.9f));
 		g2.fillRect(0, 0, getWidth(), getHeight());
 		g2.setComposite(composite);
+	}
+
+	@Override
+	public void success() {
+		tf[1].setEnabled(false);
+		bt[0].setEnabled(false);
+	}
+	
+	public void doLoginListener(Socket socket){
+		lls.setSocket(socket);
+	}
+	
+	public void setLoginListener(LoginListener listener){
+		lls=listener;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		String user=tf[0].getText();
+		String ip=tf[1].getText();
+		if(e.getSource()==bt[0]){
+			try {
+				Socket socket=new Socket(ip, 8855);
+				doLoginListener(socket);
+				Controll.sendMessage(StateCode.REQUESTLINK);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}			
+		}
 	}
 }
