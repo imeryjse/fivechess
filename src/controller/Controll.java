@@ -19,19 +19,20 @@ public class Controll{
 	private GridPanel gridPanel;
 	private InfoPanel infoPanel;
 	private static Socket socket=null;
+	private Controll ctl;
 	public Controll(LoginPanel loginPanel, ChessPanel chessPanel, GridPanel gridPanel, InfoPanel infoPanel) {
 		this.loginPanel = loginPanel;
 		this.chessPanel = chessPanel;
 		this.gridPanel = gridPanel;
 		this.infoPanel = infoPanel;
-		
+		ctl=this;
 		loginPanel.setLoginListener(new LoginListener() {
 			
 			@Override
 			public void setSocket(Socket soc) {
 				socket=soc;
 				System.out.println("客户端连接成功");
-				new Receiver(soc).startThread();
+				new Receiver(soc,ctl).startThread();
 			}
 		});
 	}
@@ -46,7 +47,7 @@ public class Controll{
 					try {
 						socket=server.accept();
 						System.out.println("服务器接收到客服端连接！");
-						new Receiver(socket).startThread();
+						new Receiver(socket,ctl).startThread();
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -68,6 +69,14 @@ public class Controll{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public void hideLoginPanel(){
+		loginPanel.setVisible(false);
+	}
+	
+	public void enableLoginButton(){
+		loginPanel.enableComponent();
 	}
 	
 }

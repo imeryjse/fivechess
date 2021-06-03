@@ -65,4 +65,8 @@ public class MainFrame extends JFrame{
 		int f=JOptionPane.showConfirmDialog(mainFrame, message, "提示信息", JOptionPane.YES_NO_OPTION);
 		return f;
 	}
+	
+	public static void showMessage(String message){
+		JOptionPane.showMessageDialog(mainFrame, message);
+	}
 }

@@ -21,10 +21,11 @@ import javax.swing.JTextField;
 
 import controller.Controll;
 import util.LoginListener;
+import util.MessageListener;
 import util.ServerListener;
 import util.StateCode;
 
-public class LoginPanel extends JPanel implements ServerListener,ActionListener{
+public class LoginPanel extends JPanel implements ServerListener,ActionListener,MessageListener{
 
 	/**
 	 * 
@@ -62,6 +63,10 @@ public class LoginPanel extends JPanel implements ServerListener,ActionListener{
 		}
 	}
 	
+	public void enableComponent(){
+		bt[0].setEnabled(true);
+	}
+	
 	@Override
 	protected void paintComponent(Graphics g) {
 		// TODO Auto-generated method stub
@@ -93,6 +98,7 @@ public class LoginPanel extends JPanel implements ServerListener,ActionListener{
 		String user=tf[0].getText();
 		String ip=tf[1].getText();
 		if(e.getSource()==bt[0]){
+			
 			try {
 				Socket socket=new Socket(ip, 8855);
 				doLoginListener(socket);
@@ -102,5 +108,11 @@ public class LoginPanel extends JPanel implements ServerListener,ActionListener{
 				e1.printStackTrace();
 			}			
 		}
+	}
+
+	@Override
+	public void update() {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -4,14 +4,16 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 
+import controller.Controll;
 import util.StateCode;
 import view.MainFrame;
 
 public class Receiver {
 	private Socket socket;
-
-	public Receiver(Socket socket) {
+	private Controll ctl;
+	public Receiver(Socket socket,Controll ctl) {
 		this.socket = socket;
+		this.ctl=ctl;
 	}
 	
 	public void startThread(){
@@ -41,8 +43,19 @@ public class Receiver {
 		switch (message) {
 		case StateCode.REQUESTLINK:
 			int f=MainFrame.showConfirm("有人请求联机，同意吗？");
+			if(f==0)
+			{
+				Controll.sendMessage(StateCode.AGREELINK);
+				ctl.enableLoginButton();
+			}
+			else Controll.sendMessage(StateCode.DISAGREELINK);
 			break;
-
+		case StateCode.AGREELINK:
+			ctl.hideLoginPanel();
+			break;
+		case StateCode.DISAGREELINK:
+			MainFrame.showConfirm("对方拒绝了您的请求！");
+			break;
 		default:
 			break;
 		}
