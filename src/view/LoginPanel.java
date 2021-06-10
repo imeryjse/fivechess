@@ -19,19 +19,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import controller.Controll;
-import util.LoginListener;
-import util.MessageListener;
-import util.ServerListener;
-import util.StateCode;
-
-public class LoginPanel extends JPanel implements ServerListener,ActionListener,MessageListener{
+public class LoginPanel extends JPanel implements ActionListener{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private LoginListener lls;
 	
 	private JTextField[] tf=new JTextField[2];
 	private JButton[] bt=new JButton[2];
@@ -79,20 +72,7 @@ public class LoginPanel extends JPanel implements ServerListener,ActionListener,
 		g2.setComposite(composite);
 	}
 
-	@Override
-	public void success() {
-		tf[1].setEnabled(false);
-		bt[0].setEnabled(false);
-	}
 	
-	public void doLoginListener(Socket socket){
-		lls.setSocket(socket);
-	}
-	
-	public void setLoginListener(LoginListener listener){
-		lls=listener;
-	}
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String user=tf[0].getText();
@@ -101,8 +81,6 @@ public class LoginPanel extends JPanel implements ServerListener,ActionListener,
 			
 			try {
 				Socket socket=new Socket(ip, 8855);
-				doLoginListener(socket);
-				Controll.sendMessage(StateCode.REQUESTLINK);
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -110,9 +88,4 @@ public class LoginPanel extends JPanel implements ServerListener,ActionListener,
 		}
 	}
 
-	@Override
-	public void update() {
-		// TODO Auto-generated method stub
-		
-	}
 }
