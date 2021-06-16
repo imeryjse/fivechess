@@ -13,13 +13,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class LoginPanel extends JPanel implements ActionListener{
+import util.SocketUtil;
+import util.StateCode;
+
+public class LoginPanel extends JPanel implements ActionListener,Observer{
 
 	/**
 	 * 
@@ -28,6 +34,8 @@ public class LoginPanel extends JPanel implements ActionListener{
 	
 	private JTextField[] tf=new JTextField[2];
 	private JButton[] bt=new JButton[2];
+	private boolean isRequest=true;
+	
 	public LoginPanel() {
 		setLayout(new GridBagLayout());
 		setOpaque(false);
@@ -56,9 +64,6 @@ public class LoginPanel extends JPanel implements ActionListener{
 		}
 	}
 	
-	public void enableComponent(){
-		bt[0].setEnabled(true);
-	}
 	
 	@Override
 	protected void paintComponent(Graphics g) {
@@ -75,16 +80,44 @@ public class LoginPanel extends JPanel implements ActionListener{
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		String user=tf[0].getText();
-		String ip=tf[1].getText();
-		if(e.getSource()==bt[0]){
-			
-			try {
-				Socket socket=new Socket(ip, 8855);
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}			
+		String user = tf[0].getText();
+		String ip = tf[1].getText();
+		if (e.getSource() == bt[0]) {
+			if (isRequest) {
+				try {
+					Socket socket = new Socket(ip, 8855);
+					SocketUtil.setSocket(socket);
+					SocketUtil.sendMessage(StateCode.REQUESTLINK);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		}
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		if(arg instanceof Integer){
+			int code=(int) arg;
+			switch (code) {
+			case StateCode.REQUESTLINK:
+				int f=JOptionPane.showConfirmDialog(this, "有人请求联机，同意吗？", "提示信息", JOptionPane.YES_NO_OPTION);
+				if(f==0){
+					SocketUtil.sendMessage(StateCode.AGREELINK);
+					isRequest=false;
+				}
+				else{
+					SocketUtil.sendMessage(StateCode.DISAGREELINK);
+				}
+				break;
+			case StateCode.AGREELINK:
+				this.setVisible(false);
+				break;
+			case StateCode.DISAGREELINK:
+				JOptionPane.showMessageDialog(this, "对方拒绝了请求1");
+				break;
+			}
 		}
 	}
 

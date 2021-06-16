@@ -8,8 +8,9 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
+import model.Receiver;
+import util.SocketUtil;
 import view.ChessPanel;
-import view.GridPanel;
 import view.InfoPanel;
 import view.LoginPanel;
 
@@ -27,11 +28,7 @@ public class MainFrame extends JFrame{
 		
 		InfoPanel infoPanel=new InfoPanel();
 		add(infoPanel,BorderLayout.EAST);
-		
-		GridPanel gridPanel=new GridPanel();
-		chessPanel.add(gridPanel);
-		gridPanel.repaint();
-		
+				
 		LoginPanel loginPanel=new LoginPanel();
 		setGlassPane(loginPanel);
 		loginPanel.setVisible(true);
@@ -40,6 +37,13 @@ public class MainFrame extends JFrame{
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize(1000, 700);
 //		setResizable(false);
+		
+		
+		Receiver receiver=new Receiver();
+		receiver.addObserver(loginPanel);
+		
+		SocketUtil.setReceiver(receiver);
+		SocketUtil.starServer();
 	}
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {

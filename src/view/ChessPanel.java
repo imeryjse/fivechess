@@ -25,11 +25,16 @@ public class ChessPanel extends JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
+	private GridPanel gridPanel;
+	
 	public ChessPanel() {
+		
 		setBackground(new Color(0xc0c0c0));
 		setLayout(new BorderLayout());
 		setOpaque(false);
+		
+		gridPanel=new GridPanel();
+		add(gridPanel);
 		
 		JPanel bottom = new JPanel();
 		bottom.setOpaque(false);

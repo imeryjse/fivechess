@@ -2,11 +2,12 @@ package model;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.net.Socket;
+import java.util.Observable;
 
-public class Receiver {
-private Socket socket;
-	
+import util.SocketUtil;
+
+public class Receiver extends Observable{
+
 	public void startThread(){
 		new Thread(new Runnable() {
 			
@@ -14,11 +15,12 @@ private Socket socket;
 			public void run() {
 				ObjectInputStream in;
 				Object message;
-				try {
-					in=new ObjectInputStream(socket.getInputStream());
+				try {					
 					while(true){
+						in=new ObjectInputStream(SocketUtil.getSocket().getInputStream());
 						message=in.readObject();
-						
+						setChanged();
+						notifyObservers(message);
 					}
 				} catch (IOException | ClassNotFoundException e) {
 					// TODO Auto-generated catch block
